@@ -1,0 +1,468 @@
+# use height scans estimator to generate latents , get loss with priv-obs
+# But how to set the dimesion of latents????
+## TODO: [1].new mlp for heights simply
+## TODO: [2].use student encoder to get latents
+# ---- added by zsy 2025.4.29
+# NOTE: One's hard-learning for thousands of years can't be compared with those who born with golden keys forever ---to Miss Dong    2025.5.3
+from .legged_robot_config import LeggedRobotCfg, LeggedRobotCfgPPO
+
+"""
+S
+"""
+class CowaCfg(LeggedRobotCfg):
+
+    class env(LeggedRobotCfg.env):
+        # height_scan_points num : num_height_scan_input
+        num_height_scan_input = 121
+        num_height_scan_output = 30
+        # change the observation dim  
+        ## est params 
+        num_est_prob = 3 + 1               # vel_xyz + height + feet_forcesx2
+        # actor_input_stack = 3
+
+        ## obs frames  
+        frame_stack = 3
+        c_frame_stack = 3
+        ## obs nums
+        num_single_obs = 25    #+ 12 + 1 + 3 + 6 + 6 + 6 + (num_height_scan_input + num_est_prob) #184
+        single_num_privileged_obs = (25) + 12 + 1 + 3 + 6 + 6 + 6 + (num_height_scan_input + num_est_prob) #184
+
+
+        num_observations = int(frame_stack * num_single_obs)  #actor
+        num_privileged_obs = int(c_frame_stack * single_num_privileged_obs) # critic
+
+
+        num_actions = 6
+        num_envs = 4096
+        episode_length_s = 20  # episode length in seconds
+        use_ref_actions = False
+        fail_to_terminal_time_s = 0.2
+
+
+        # privileged obs 
+        # priv_observe_friction = False  # 1
+        # priv_observe_base_mass = False # 1
+        # priv_observe_restitution = False #1
+        # priv_observe_com_displacement = False    # 3
+        
+        # priv_observe_motor_strength = False  # 6
+        # priv_observe_motor_offset = False    # 6 
+        # priv_observe_gravity = False    # 3
+        # priv_observe_measure_heights = False # 187
+
+    class dagger:
+        dagger_only = False
+        dagger_on = True
+        load_run_dagger = "May21_16-57-23_modify-T-2rad"
+        checkpoint_dagger = -1
+
+
+
+    class safety:
+        # safety factors
+        pos_limit = 1
+        vel_limit = 1
+        torque_limit = 1    #0.85 xxx 1
+        # acc_limit = 0.6
+        # dof_acc_limits_ratio = 6
+
+    class asset(LeggedRobotCfg.asset):
+        # file = "{WHEEL_LEGGED_GYM_ROOT_DIR}/resources/robots/cowa_wheel_legged_deployed/urdf/cowa_jiaozhun_2rad_no_collision.urdf"     
+        file = "{WHEEL_LEGGED_GYM_ROOT_DIR}/resources/robots/cowa_wheel_legged_deployed/urdf/cowa_jiaozhun_2rad_no_collision.urdf" 
+        name = "cowa_robot"  
+        offset = 0.
+        l1 = 0.25
+        l2 = 0.25
+        foot_name = "wheel"
+        penalize_contacts_on = ["base", "battery", "hip", "knee"] 
+        terminate_after_contacts_on = ["base", "hip", "knee", "battery"]
+
+        disable_gravity = False
+        self_collisions = 1  # 1 to disable, 0 to enable...bitwise filter
+        flip_visual_attachments = False #
+        replace_cylinder_with_capsule = False
+        fix_base_link = False
+        fix_base_link_height = 1.8  # fix the base of the robot at the height
+    
+    class terrain(LeggedRobotCfg.terrain):
+        # mesh_type = 'plane'
+        mesh_type = 'trimesh' 
+        curriculum = True  
+        track_test = False 
+        add_perlin_noise = False 
+        # rough terrain only:
+        measure_heights = True
+        static_friction = 0.8
+        dynamic_friction = 0.8
+        terrain_length = 8.  
+        terrain_width = 8.  
+        num_rows = 20  # number of terrain rows (levels)
+        num_cols = 10  # number of terrain cols (types)
+        max_init_terrain_level = 0  # starting curriculum state 
+        # plane; obstacles; uniform; slope_up; slope_down, stair_up, stair_down  
+        terrain_proportions = [0., 0., 0., 1., 0., 0, 0]
+        # terrain_proportions = [0, 0, 0, 1., 0., 0, 0,0]   #
+        restitution = 0.
+        measured_points_x = [
+            -0.5,
+            -0.4,
+            -0.3,
+            -0.2,
+            -0.1,
+            0.0,
+            0.1,
+            0.2,
+            0.3,
+            0.4,
+            0.5,
+        ]  # 0.6m x 1m rectangle (without center line) 
+        measured_points_y = [-0.5, -0.4, -0.3, -0.2, -0.1, 0.0, 0.1, 0.2, 0.3, 0.4, 0.5]
+        slope_treshold = 0.0 # height below this params is change to 
+        en_fix_step_height = False # zsy add
+        draw_scan_dots = False
+
+    # TODO
+    class noise:
+        add_noise = True
+        noise_level = 1    # scales other values
+
+        class noise_scales:
+            dof_pos = 0.1
+            dof_vel = 0.3  #0.5
+            ang_vel = 0.2 #0.2
+            lin_vel = 0.1 #0.1
+            gravity = 0.04 #0.05
+            quat = 0.08 #0.1
+            height_measurements = 0.02   #2cm
+
+    class init_state(LeggedRobotCfg.init_state):
+        pos = [0.0, 0.0, 0.33]  # x,y,z [m]
+        rot = [0.0, 0.0, 0.0, 1.0]  # x,y,z,w [quat]
+        lin_vel = [0.0, 0.0, 0.0]  # x,y,z [m/s]
+        ang_vel = [0.0, 0.0, 0.0]  # x,y,z [rad/s]
+        rand_init_dof = False
+        default_joint_angles = {  # target angles when action = 0.0
+            "left_hip_pitch_joint": 0,
+            "left_knee_pitch_joint": 0,
+            "left_wheel_joint": 0,
+            "right_hip_pitch_joint": 0,
+            "right_knee_pitch_joint": 0,
+            "right_wheel_joint": 0            
+            # "left_hip_joint": 0.0,
+            # "left_knee_joint": 0.0,
+            # "left_wheel_joint": 0.0,
+            # "right_hip_joint": 0.0,
+            # "right_knee_joint": 0.0,
+            # "right_wheel_joint": 0.0,            
+        }
+
+
+    # TODO control_type,pos_action_scale,vel_action_scale
+    class control(LeggedRobotCfg.control):
+        control_test = False
+        control_type = "P"  # P: position, V: velocity, T: torques
+        # PD Drive parameters:
+        stiffness = {"hip": 110.0, "knee": 210, "wheel": 0}  # [N*m/rad]
+        damping = {"hip": 8, "knee": 8, "wheel": 3}  # [N*m*s/rad]
+        # action scale: target angle = actionScale * action + defaultAngle
+        action_scale = 0.5
+        # decimation: Number of control action updates @ sim DT per policy DT
+        decimation = 5  # 50 Hz
+        pos_action_scale = 0.5 # TODO:0.5
+        vel_action_scale = 10.0
+
+        # ratio: self.action = ratio * self.action + (1 - ratio) * last_actoin
+        action_smoothness = True #TODO:
+        ratio = 0.9
+        projected_gravity = False
+        # feedforward_force = 6 # 42.46kg / 2
+
+    class sim(LeggedRobotCfg.sim):
+        web_vis = False
+        port = 6001      
+        web_vis_envs = 1 
+        keep_default_viewer = False
+
+        dt = 0.002  # 200 Hz
+        substeps = 1  # 2
+        up_axis = 1  # 0 is y, 1 is z
+
+        class physx(LeggedRobotCfg.sim.physx):
+            num_threads = 10                                  # xxw
+            solver_type = 1  # 0: pgs, 1: tgs
+            num_position_iterations = 4
+            num_velocity_iterations = 0
+            contact_offset = 0.01  # [m]
+            rest_offset = 0.0   # [m]
+            bounce_threshold_velocity = 0.1  # [m/s]
+            max_depenetration_velocity = 1.0
+            max_gpu_contact_pairs = 2**23  # 2**24 -> needed for 8000 envs and more
+            default_buffer_size_multiplier = 5
+            # 0: never, 1: last sub-step, 2: all sub-steps (default=2)
+            contact_collection = 2
+
+    class domain_rand(LeggedRobotCfg.domain_rand):
+
+        # TODO randomize_default_dof_pos, randomize_action_delay
+        push_robots = True
+        push_interval_s = 8
+        max_push_vel_xy = 0.05  # 0.2
+        # max_push_ang_vel = 0.1
+
+        action_noise = 0.0 # 0.02
+        action_delay = 0.0 # 0.1
+
+        rand_interval_s = 10    ## 
+        randomize_rigids_after_start = True     
+        randomize_friction = True             # xxw True
+        friction_range = [0.1, 2]
+        randomize_base_mass = True #
+        # randomize_mass_range = [0.5, 1.5]      
+        added_mass_range = [-5, 5]              
+        randomize_restitution = True           # TODO
+        restitution_range = [0, 1.0]            
+
+        randomize_com_displacement = True     
+        com_displacement_range = [-0.05, 0.05]  # 
+        randomize_each_link = False
+        link_com_displacement_range_factor = 0.02   # 
+        
+        randomize_inertia = True    
+        randomize_inertia_range = [0.8, 1.2]
+
+        randomize_motor_strength = True      
+        motor_strength_range = [0.9, 1.1]      
+
+        randomize_PD_factor = True #             
+        Kp_factor_range = [0.9, 1.1]            
+        Kd_factor_range = [0.9, 1.1]
+
+        randomize_motor_offset = True 
+
+        default_motor_offset = [0,0.0,0,\
+                                0,0.0,0]
+        motor_offset_range = [-0.03, 0.03]
+
+        randomize_default_dof_pos = True # defautl dof pos
+        randomize_default_dof_pos_range = [-0.1, 0.1]
+
+        gravity_rand_interval_s = 7
+        gravity_impulse_duration = 1.0
+
+        randomize_gravity = False # ��
+
+        gravity_range = [-1.0, 1.0]         #
+
+        randomize_lag_timesteps = False     
+        lag_timesteps = 2       #2~4ms 
+
+        randomize_torque_delay = False
+        torque_delay_steps = 2
+
+        # randomize_obs_delay = False 
+        # obs_delay_steps = 1
+        # <><><><><><><><><><><><><><><><> lag <><><><><><><><><><><><><><><><><<>><>><>
+        # agibot  
+        add_lag = True
+        randomize_lag_timesteps = True
+        randomize_lag_timesteps_perstep = True
+        lag_timesteps_range = [3, 11]
+
+        add_dof_lag = True
+        randomize_dof_lag_timesteps = True
+        randomize_dof_lag_timesteps_perstep = False
+        dof_lag_timesteps_range = [0, 2] # 1~4ms
+
+        add_imu_lag = True 
+        randomize_imu_lag_timesteps = True
+        randomize_imu_lag_timesteps_perstep = False         
+        imu_lag_timesteps_range = [3, 11] # 10~22ms
+
+        # <*!->
+        add_heights_lag = True 
+        randomize_heights_lag_timesteps = True
+        randomize_heights_lag_timesteps_perstep = False         
+        heights_lag_timesteps_range = [1, 50] # 2 ~ 100ms NOTE: so big big big ...
+
+        # <><><><>
+        randomize_coulomb_friction = True
+        joint_stick_friction_range = [0.1, 0.2]
+        joint_coulomb_friction_range = [0.0, 0.0]
+        
+        randomize_joint_friction = True
+        randomize_joint_friction_each_joint = False
+        
+        default_joint_friction = [0.01, 0.002, 0.02, \
+                                 0.01, 0.002, 0.02, ]  
+        joint_friction_range = [0.8, 1.2]
+        # joint_friction_range = [1.5, 1.5]
+        joint_1_friction_range = [0.9, 1.1]
+        joint_2_friction_range = [0.9, 1.1]
+        joint_3_friction_range = [0.9, 1.1]
+        joint_4_friction_range = [0.9, 1.1]
+        joint_5_friction_range = [0.9, 1.1]
+        joint_6_friction_range = [0.9, 1.1]
+
+
+        randomize_joint_damping = True
+        randomize_joint_damping_each_joint = False
+        default_joint_damping = [1.8, 4, 0.03, \
+                                 1, 4, 0.03, ]
+        joint_damping_range = [0.8, 1.2]
+        joint_1_damping_range = [0.8, 1.2]
+        joint_2_damping_range = [0.8, 1.2] 
+        joint_3_damping_range = [0.8, 1.2]
+        joint_4_damping_range = [0.8, 1.2]
+        joint_5_damping_range = [0.8, 1.2]
+        joint_6_damping_range = [0.8, 1.2]
+
+
+        randomize_joint_armature = True 
+        randomize_joint_armature_each_joint = False
+        default_joint_armature = [0.138096, 0.08, 0.08,\
+                                  0.138096, 0.08, 0.08]
+        joint_armature_range = [0.8, 1.2]     # Factor
+        joint_1_armature_range = [0.95, 1.05]
+        joint_2_armature_range = [0.95, 1.05]
+        joint_3_armature_range = [0.95, 1.05]
+        joint_4_armature_range = [0.95, 1.05]
+        joint_5_armature_range = [0.9, 1.1]
+        joint_6_armature_range = [0.9, 1.1]
+
+    class commands(LeggedRobotCfg.commands):
+        curriculum = False
+        max_curriculum = 3
+        num_commands = 3
+        resampling_time = 10.  # time before command are changed[s]
+        stand_still = False # increse the proportion of command "0"
+        stand_still_ratio = 0.8
+        heading_command = False  # if true: compute ang vel command from heading error
+        class ranges:
+            lin_vel_x = [-1.0, 1.0]  # min max [m/s]
+            ang_vel_yaw = [-0.5, 0.5]  # min max [rad/s]
+            height = [0.32, 0.331]
+            heading = [-3.14, 3.14]
+
+    class rewards:
+        base_height_target = 0.36         
+        only_positive_rewards = False 
+        # tracking_sigma = 4   
+        tracking_sigma = 0.25  # tracking reward = exp(-error^2/sigma)
+        tracking_sigma_vel_x = 20
+        tracking_sigma_ang_vel = 20
+        tracking_vel_enhance = False
+        tracking_vel_hard = False   
+        soft_dof_pos_limit = (
+            0.97  # percentage of urdf limits, values above this limit are penalized
+        )
+        soft_dof_vel_limit = 0.8
+        soft_torque_limit = 0.8
+        max_contact_force = 100  # Forces above this value are penalized xxx 1400
+        clip_single_reward = 1
+        
+        min_feet_dist = 0.64
+        max_feet_dist = 0.645
+
+        base_lin_acc_limit = 0.8  
+
+        max_feet_z_dist = 0.05
+        min_feet_z_dist = -0.05
+
+
+        class scales:
+            ################# task rewards ##################
+            feet_distance = 0.2
+            tracking_lin_vel = 1.0
+            tracking_lin_vel_enhance = 1.0
+            tracking_ang_vel = 1.0
+            base_height = 1.0
+            same_foot_z_position = 0.4
+            ############## normalized rewards #####################
+            nominal_state = -0.05
+            lin_vel_z = -0.1e-3
+            ang_vel_xy = -0.05
+            power = -1e-8
+            dof_vel = -5e-4
+            dof_acc = -5e-7
+            dof_pos_limits = -0.1
+            dof_vel_limits = -0.1
+            torques = -1e-7
+            torque_limits = -0.05
+            action_rate = -0.2
+            action_smoothness = -0.5 #-0.1  
+            ############# penalty rewards ######################
+            stand_still_vel_penality = -20.0
+            orientation = -10.0
+            ############# sparse reward ########################
+            feet_xy_contact_forces = -0.5 # -0.01  
+
+
+
+    class normalization:
+        class obs_scales:
+            lin_vel = 10.0
+            ang_vel = 0.25
+            dof_pos = 1.0
+            dof_vel = 0.05
+            dof_acc = 0.0025
+            height_measurements = 25.0 #5.0  ## NOTE: change big make it obvious in heights
+            torques = 0.05
+            quat = 1
+            forces = 0.1
+
+        clip_observations = 100.
+        clip_actions = 100.
+
+
+
+
+
+
+class CowaCfgPPO(LeggedRobotCfgPPO):
+    seed = 10
+    runner_class_name = 'OnPolicyRunner_Lidar_TS'
+
+    class policy(LeggedRobotCfgPPO.policy):
+        init_noise_std = 1.0
+        actor_hidden_dims = [256, 128, 64]
+        critic_hidden_dims = [256, 128, 64]
+        height_scan_encoder_dims = [128, 64]
+        estimator_hidden_dims=[128, 64]
+
+    class algorithm(LeggedRobotCfgPPO.algorithm):
+        value_loss_coef = 1.0
+        use_clipped_value_loss = True
+        clip_param = 0.2
+        entropy_coef = 0.01
+        num_learning_epochs = 5
+        num_mini_batches = 4  # mini batch size = num_envs*nsteps / nminibatches
+        learning_rate = 5.0e-4  # 5.e-4
+        schedule = "adaptive"  # could be adaptive, fixed
+        gamma = 0.99
+        lam = 0.95
+        desired_kl = 0.01
+        max_grad_norm = 1.0
+        # estimator para
+        mlp_learning_rate = 5.e-4
+        num_adaptation_module_substeps = 1
+        # dagger
+
+
+    class runner:
+        policy_class_name = 'ActorCritic'
+        algorithm_class_name = 'PPO'
+        num_steps_per_env = 48  # per iteration
+        max_iterations = 100000  # number of policy updates        #  xxw
+
+
+        # logging
+        save_interval = 1000  # Please check for potential savings every `save_interval` iterations.
+        experiment_name = 'wtf'
+        run_name = 'wtf'
+        # Load and resume
+        resume = False
+        load_run = -1  # -1 = last run
+        checkpoint = -1  # -1 = last saved model
+        resume_path = 'wtf'  # updated from load_run and chkpt
+
+    

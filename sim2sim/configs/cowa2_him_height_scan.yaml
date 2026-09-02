@@ -1,0 +1,19 @@
+# Deployment configuration for quadruped_wtw_him_arm_fix_height_scan.
+# The matching play entry exports this checkpoint to the path below.
+base_config: cowa2_him_wtw.yaml
+
+policy_path: "{LEGGED_GYM_ROOT_DIR}/logs/quadruped_wtw_him_arm_fix_height_scan/exported/Aug14_09-39-59_wtw_height_scan_[wo_DR]_[random_latest]_[step_height_max_0.20]_[default_hip_pos_-2]_[stand_base_vel_penality_-4]_[measured_points_x_0.5_1]_[freq_1.5]_[torque_clip_110_220]_[无编码器随机化]_[short_frame_stack_5]/polices/Aug14_09-39-59_wtw_height_scan_[wo_DR]_[random_latest]_[step_height_max_0.20]_[default_hip_pos_-2]_[stand_base_vel_penality_-4]_[measured_points_x_0.5_1]_[freq_1.5]_[torque_clip_110_220]_[无编码器随机化]_[short_frame_stack_5]_model_-1.onnx"
+# Match QuadWtwCfg_HIM.env.short_frame_stack in the current task config.
+frame_stack: 5
+num_obs: 125
+
+# The actor frame is [59 proprioception values | 66 height values].  These
+# values mirror quadruped_wtw_him_arm_fix_height_scan_config.py exactly.
+height_scan:
+  enabled: true
+  measured_points_x: [0.5, 0.6, 0.7, 0.8, 0.9, 1.0]
+  measured_points_y: [-0.5, -0.4, -0.3, -0.2, -0.1, 0.0, 0.1, 0.2, 0.3, 0.4, 0.5]
+  base_reference: 0.4
+  scale: 5.0
+  update_hz: 10.0
+  ray_start_height: 3.0

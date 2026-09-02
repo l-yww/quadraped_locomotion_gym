@@ -1,0 +1,24 @@
+# # Created by venv; see https://docs.python.org/3/library/venv.html
+# *
+# !resources/robots/
+# logs/
+# runs/
+# data/
+
+
+
+# 1. 忽略 Python 虚拟环境和缓存 (千万别忽略自己的源码)
+venv/
+__pycache__/
+*.pyc
+
+# 2. 忽略训练跑出来的临时文件和数据模型
+.vscode/
+logs/
+runs/
+data/
+*.pth
+
+# 3. 忽略系统级隐藏文件
+.DS_Store
+wheel_legged_gym.egg-info/

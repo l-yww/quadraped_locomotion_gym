@@ -1,0 +1,154 @@
+# HIM (History-based Imitation and Modeling) model config for quadruped_arm_him (3D cmd)
+# obs 维度由 enable_gait_clock 决定(必须与训练 env 一致):
+# enable_gait_clock=True : cmd3+q12+dq12+act12+ang3+grav3+gait1+clock4 = 50 → input 30*50=1500
+# enable_gait_clock=False: cmd3+q12+dq12+act12+ang3+grav3              = 45 → input 30*45=1350
+# deploy 脚本按 enable_gait_clock 自动兼容两种模型
+
+frame_stack: 30
+
+# 步态时钟开关：必须与训练 env 的 observe_timing_parameter/observe_clock_inputs 一致
+# True=50维(有时钟, 对应 enable_gait_clock=True 训练的模型)
+# False=45维(无时钟, 对应 enable_gait_clock=False 训练的模型, 如当前 amp 模型)
+enable_gait_clock: False
+
+# 步态时钟参数（仅 enable_gait_clock=true 时生效；与 quadruped_arm_him env 固定常量一致）
+gait_freq: 2.0        # 步频 Hz
+gait_phase: 0.5       # trot 对角同相
+gait_offset: 0.0
+gait_bound: 0.0
+gait_duration: 0.5    # 占空比 50%
+zero_cmd_thresh: 0.1  # 原地检测阈值: ‖cmd[:2]‖ 与 |cmd[2]| 均小于此值时步态停转
+
+# 复杂地形  
+# =======  模型存档 d1-1 trimesh  ======== #
+# policy_path: "/home/ev/lyw_workspace/wheel_legged_gym/logs/quadruped_arm_him_amp/exported/0709/polices/0709_model_8500.onnx"   #Jul09_10-54-52_+foot_slip惩罚
+# policy_path: "/home/ev/lyw_workspace/wheel_legged_gym/logs/quadruped_arm_him_amp/exported/0711/polices/0711_model_19000.onnx"  #Jul10_18-45-36_专家数据v1-对齐电机参数（较好）
+# policy_path: "/home/ev/lyw_workspace/wheel_legged_gym/logs/quadruped_arm_him_amp/exported/0713/polices/0713_model_20000.onnx"  #Jul11_10-30-59_专家数据v1-对齐电机参数
+# policy_path: "/home/ev/lyw_workspace/wheel_legged_gym/logs/quadruped_arm_him_amp/exported/0710/polices/0710_model_21500.onnx"  #Jul09_16-07-36_专家数据v3-不区分(较好)
+# policy_path: "/home/ev/lyw_workspace/wheel_legged_gym/logs/quadruped_arm_him_amp/exported/0711/polices/0711_model_26000.onnx"  #Jul10_13-23-00_专家数据v4（较差）
+# policy_path: "/home/ev/lyw_workspace/wheel_legged_gym/logs/quadruped_arm_him_amp/exported/0714/polices/0714_model_14000.onnx"  #Jul13_11-00-10_140KP-修改t-w曲线 
+# policy_path: "/home/ev/lyw_workspace/wheel_legged_gym/logs/quadruped_arm_him_amp/exported/0714/polices/0714_model_26000.onnx"  #Jul13_12-16-40_处理楼梯不能停稳 57500
+# policy_path: "/home/ev/lyw_workspace/wheel_legged_gym/logs/quadruped_arm_him_amp/exported/0714/polices/0714_model_25000.onnx"  #Jul13_14-09-20_处理楼梯不能停稳
+# policy_path: "/home/ev/lyw_workspace/wheel_legged_gym/logs/quadruped_arm_him_amp/exported/0714/polices/0714_model_114500.onnx" #Jul10_17-58-09_专家数据v4-对齐电机参数 *
+# policy_path: "/home/ev/lyw_workspace/wheel_legged_gym/logs/quadruped_arm_him_amp/exported/0715/polices/0715_model_18500.onnx"  #Jul14_18-42-54_任务-0.65
+
+# =======  模型存档 d1-1 plane  ========== #
+# policy_path: "/home/ev/lyw_workspace/wheel_legged_gym/logs/quadruped_arm_him_amp/exported/0805/polices/0805_model_49500.onnx"  #Aug03_18-14-01_plane-d1_data_v1
+# policy_path: "/home/ev/lyw_workspace/wheel_legged_gym/logs/quadruped_arm_him_amp/exported/0806/polices/0806_model_55000.onnx"  #Aug04_14-05-12_plane-d1_data_v1
+
+
+# =======  模型存档 d1-2 trimesh  ======== #
+# policy_path: "/home/ev/lyw_workspace/wheel_legged_gym/logs/quadruped_arm_him_amp/exported/0814/polices/0814_model_18500.onnx"  #Aug13_18-34-56_trimesh-d1_2-关闭随机化-160-5.0
+policy_path: "/home/ev/lyw_workspace/wheel_legged_gym/logs/quadruped_arm_him_amp/exported/0818/polices/0818_model_30000.onnx"  #Aug17_11-25-21_trimesh-d1_2-ori&height约束
+# policy_path: "/home/ev/lyw_workspace/wheel_legged_gym/logs/quadruped_arm_him_amp/exported/0818/polices/0818_model_11500.onnx"  #Aug17_17-44-38_trimesh-d1_2-加大ori
+
+
+
+# =======  模型测试 d1-1 ======== #
+# policy_path: "/home/ev/lyw_workspace/wheel_legged_gym/logs/quadruped_arm_him_amp/exported/0714/polices/0714_model_19500.onnx"  #Jul13_17-59-40_处理楼梯不能停稳
+# policy_path: "/home/ev/lyw_workspace/wheel_legged_gym/logs/quadruped_arm_him_amp/exported/0714/polices/0714_model_20000.onnx"  #Jul13_18-07-03_处理楼梯不能停稳
+# policy_path: "/home/ev/lyw_workspace/wheel_legged_gym/logs/quadruped_arm_him_amp/exported/0714/polices/0714_model_18500.onnx"  #Jul13_18-15-38_处理楼梯不能停稳
+# policy_path: "/home/ev/lyw_workspace/wheel_legged_gym/logs/quadruped_arm_him_amp/exported/0715/polices/0715_model_28000.onnx"  #Jul14_10-51-27_处理楼梯不能停稳
+# policy_path: "/home/ev/lyw_workspace/wheel_legged_gym/logs/quadruped_arm_him_amp/exported/0715/polices/0715_model_28500.onnx"  #Jul14_10-53-22_处理楼梯不能停稳
+# policy_path: "/home/ev/lyw_workspace/wheel_legged_gym/logs/quadruped_arm_him_amp/exported/0724/polices/0724_model_40000.onnx"  #e
+# policy_path: "/home/ev/lyw_workspace/wheel_legged_gym/logs/quadruped_arm_him_amp/exported/0724/polices/0724_model_35000.onnx"  #e
+# policy_path: "/home/ev/lyw_workspace/wheel_legged_gym/logs/quadruped_arm_him_amp/exported/0724/polices/0724_model_36000.onnx"  #e
+# policy_path: "/home/ev/lyw_workspace/wheel_legged_gym/logs/quadruped_arm_him_amp/exported/0806/polices/0806_model_55000.onnx"   #v4 plane
+# policy_path: "/home/ev/lyw_workspace/wheel_legged_gym/logs/quadruped_arm_him_amp/exported/0813/polices/0813_model_19000.onnx"   #v1 plane
+# policy_path: "/home/ev/lyw_workspace/wheel_legged_gym/logs/quadruped_arm_him_amp/exported/0818/polices/0818_model_14500.onnx"  
+
+
+
+
+
+
+
+
+
+xml_path: "{LEGGED_GYM_ROOT_DIR}/sim2sim/cowa2_description_mujoco/xml/scene.xml"
+simulation_duration: 60000000.0
+simulation_dt: 0.005
+control_decimation: 4
+
+kps: [160.0, 160.0, 160.0, 160.0, 160.0, 160.0, 160.0, 160.0, 160.0, 160.0, 160.0, 160.0]
+# kps: [150.0, 150.0, 150.0, 150.0, 150.0, 150.0, 150.0, 150.0, 150.0, 150.0, 150.0, 150.0]
+# kps: [140.0, 140.0, 140.0, 140.0, 140.0, 140.0, 140.0, 140.0, 140.0, 140.0, 140.0, 140.0]
+# kps: [130.0, 130.0, 130.0, 130.0, 130.0, 130.0, 130.0, 130.0, 130.0, 130.0, 130.0, 130.0]
+# kps: [120.0, 120.0, 120.0, 120.0, 120.0, 120.0, 120.0, 120.0, 120.0, 120.0, 120.0, 120.0]
+kds: [5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0]
+# kds: [4.5, 4.5, 4.5, 4.5, 4.5, 4.5, 4.5, 4.5, 4.5, 4.5, 4.5, 4.5]
+
+
+default_angles: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+lin_vel_scale: 2.0
+ang_vel_scale: 0.25
+dof_pos_scale: 1.0
+dof_vel_scale: 0.05
+# action_scale: 0.45
+action_scale: 0.25
+cmd_scale: [2.0, 2.0, 0.25]
+num_actions: 12
+num_obs: 45 #50
+cmd_range:
+  - [-3.0, 3.5]    
+  - [-1.0, 1.0]  
+  - [-2.5, 2.5]    
+max_cmd: [2.0, 1.5, 2.5]
+cmd_init: [1.0, 0.0, 0.0]
+
+
+mujoco_joint_names: [
+
+  "FL_hip_joint",
+  "FL_thigh_joint",
+  "FL_calf_joint",
+
+  "FR_hip_joint",
+  "FR_thigh_joint",
+  "FR_calf_joint",
+
+  "RL_hip_joint",
+  "RL_thigh_joint",
+  "RL_calf_joint",
+
+  "RR_hip_joint",
+  "RR_thigh_joint",
+  "RR_calf_joint"
+]
+
+model_joint_names: [
+
+  "FL_hip_joint",
+  "RL_hip_joint",
+  "FR_hip_joint",
+  "RR_hip_joint",
+
+  "FL_thigh_joint",
+  "RL_thigh_joint",
+  "FR_thigh_joint",
+  "RR_thigh_joint",
+
+  "FL_calf_joint",
+  "RL_calf_joint",
+  "FR_calf_joint",
+  "RR_calf_joint"
+]
+
+# ===== torque-vel 约束 (对齐训练父类 LeggedRobot._compute_torques) =====
+torque_vel_limits:
+  hip_thigh:
+    indices: [0, 1, 3, 4, 6, 7, 9, 10]   # FL/FR/RL/RR 的 hip+thigh
+    max_vel: 21.0     # rad/s, 超过此值加速力矩限 0
+    vel_1: 7.28       # rad/s, 此值以下力矩限 max_torque, 以上线性递减
+    max_torque: 200.0 # Nm
+  calf:
+    indices: [2, 5, 8, 11]                # FL/FR/RL/RR 的 calf
+    max_vel: 13.0
+    vel_1: 6.6
+    max_torque: 330.0
+    directional_brake: true
+  # 顶层静态 clip (兜底, 与分组 max_torque 对齐)
+  top_clip: [ 200.0, 200.0, 330.0, 
+              200.0, 200.0, 330.0, 
+              200.0, 200.0, 330.0, 
+              200.0, 200.0, 330.0 ]

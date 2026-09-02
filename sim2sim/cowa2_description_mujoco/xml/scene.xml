@@ -1,0 +1,357 @@
+<mujoco model="cowa2 scene">
+  <!-- <include file="cowa2_d1_arm_1.xml"/> -->
+  <include file="cowa2_d1_arm_2.xml"/>
+  <statistic center="4 3 0.6" extent="8"/>
+
+  <option timestep="0.005" integrator="implicitfast" cone="pyramidal" noslip_iterations="5"/>
+
+  <visual>
+    <headlight diffuse="0.6 0.6 0.6" ambient="0.3 0.3 0.3" specular="0 0 0"/>
+    <rgba haze="0.15 0.25 0.35 1"/>
+    <global azimuth="-130" elevation="-20"/>
+  </visual>
+
+  <asset>
+    <texture type="skybox" builtin="gradient" rgb1="0.3 0.5 0.7" rgb2="0 0 0" width="512" height="3072"/>
+    <texture type="2d" name="groundplane" builtin="checker" mark="edge" rgb1="0.2 0.3 0.4" rgb2="0.1 0.2 0.3"
+      markrgb="0.8 0.8 0.8" width="300" height="300"/>
+    <material name="groundplane" texture="groundplane" texuniform="true" texrepeat="5 5" reflectance="0.2"/>
+  </asset>
+
+  <worldbody>
+    <light pos="0 0 1.5" dir="0 0 -1" directional="true"/>
+    <geom name="floor" size="0 0 0.05" type="plane" material="groundplane" friction="1.0 0.1 0.01"/>
+
+    <!-- 不规则高度离散台阶阵列 (测试用): 5x5 网格, 间距0.4m, 台阶0.3m见方, 高度随机0.02~0.20m。
+         摆在狗前方 +x (1.0~2.6m), y 居中 (-0.8~0.8m)。需要时取消注释。 -->
+    <!-- <geom name="rand_step_00" type="box" pos="1.000 -0.800 0.060" size="0.15 0.15 0.060" rgba="0.45 0.40 0.35 1" friction="1.0 0.1 0.01"/>
+    <geom name="rand_step_01" type="box" pos="1.000 -0.400 0.045" size="0.15 0.15 0.045" rgba="0.45 0.40 0.35 1" friction="1.0 0.1 0.01"/>
+    <geom name="rand_step_02" type="box" pos="1.000 0.000 0.105" size="0.15 0.15 0.105" rgba="0.45 0.40 0.35 1" friction="1.0 0.1 0.01"/>
+    <geom name="rand_step_03" type="box" pos="1.000 0.400 0.030" size="0.15 0.15 0.030" rgba="0.45 0.40 0.35 1" friction="1.0 0.1 0.01"/>
+    <geom name="rand_step_04" type="box" pos="1.000 0.800 0.090" size="0.15 0.15 0.090" rgba="0.45 0.40 0.35 1" friction="1.0 0.1 0.01"/>
+    <geom name="rand_step_05" type="box" pos="1.400 -0.800 0.075" size="0.15 0.15 0.075" rgba="0.45 0.40 0.35 1" friction="1.0 0.1 0.01"/>
+    <geom name="rand_step_06" type="box" pos="1.400 -0.400 0.020" size="0.15 0.15 0.020" rgba="0.45 0.40 0.35 1" friction="1.0 0.1 0.01"/>
+    <geom name="rand_step_07" type="box" pos="1.400 0.000 0.135" size="0.15 0.15 0.135" rgba="0.45 0.40 0.35 1" friction="1.0 0.1 0.01"/>
+    <geom name="rand_step_08" type="box" pos="1.400 0.400 0.060" size="0.15 0.15 0.060" rgba="0.45 0.40 0.35 1" friction="1.0 0.1 0.01"/>
+    <geom name="rand_step_09" type="box" pos="1.400 0.800 0.150" size="0.15 0.15 0.150" rgba="0.45 0.40 0.35 1" friction="1.0 0.1 0.01"/>
+    <geom name="rand_step_10" type="box" pos="1.800 -0.800 0.090" size="0.15 0.15 0.090" rgba="0.45 0.40 0.35 1" friction="1.0 0.1 0.01"/>
+    <geom name="rand_step_11" type="box" pos="1.800 -0.400 0.165" size="0.15 0.15 0.165" rgba="0.45 0.40 0.35 1" friction="1.0 0.1 0.01"/>
+    <geom name="rand_step_12" type="box" pos="1.800 0.000 0.045" size="0.15 0.15 0.045" rgba="0.45 0.40 0.35 1" friction="1.0 0.1 0.01"/>
+    <geom name="rand_step_13" type="box" pos="1.800 0.400 0.120" size="0.15 0.15 0.120" rgba="0.45 0.40 0.35 1" friction="1.0 0.1 0.01"/>
+    <geom name="rand_step_14" type="box" pos="1.800 0.800 0.030" size="0.15 0.15 0.030" rgba="0.45 0.40 0.35 1" friction="1.0 0.1 0.01"/>
+    <geom name="rand_step_15" type="box" pos="2.200 -0.800 0.105" size="0.15 0.15 0.105" rgba="0.45 0.40 0.35 1" friction="1.0 0.1 0.01"/>
+    <geom name="rand_step_16" type="box" pos="2.200 -0.400 0.060" size="0.15 0.15 0.060" rgba="0.45 0.40 0.35 1" friction="1.0 0.1 0.01"/>
+    <geom name="rand_step_17" type="box" pos="2.200 0.000 0.180" size="0.15 0.15 0.180" rgba="0.45 0.40 0.35 1" friction="1.0 0.1 0.01"/>
+    <geom name="rand_step_18" type="box" pos="2.200 0.400 0.075" size="0.15 0.15 0.075" rgba="0.45 0.40 0.35 1" friction="1.0 0.1 0.01"/>
+    <geom name="rand_step_19" type="box" pos="2.200 0.800 0.135" size="0.15 0.15 0.135" rgba="0.45 0.40 0.35 1" friction="1.0 0.1 0.01"/>
+    <geom name="rand_step_20" type="box" pos="2.600 -0.800 0.045" size="0.15 0.15 0.045" rgba="0.45 0.40 0.35 1" friction="1.0 0.1 0.01"/>
+    <geom name="rand_step_21" type="box" pos="2.600 -0.400 0.150" size="0.15 0.15 0.150" rgba="0.45 0.40 0.35 1" friction="1.0 0.1 0.01"/>
+    <geom name="rand_step_22" type="box" pos="2.600 0.000 0.090" size="0.15 0.15 0.090" rgba="0.45 0.40 0.35 1" friction="1.0 0.1 0.01"/>
+    <geom name="rand_step_23" type="box" pos="2.600 0.400 0.020" size="0.15 0.15 0.020" rgba="0.45 0.40 0.35 1" friction="1.0 0.1 0.01"/>
+    <geom name="rand_step_24" type="box" pos="2.600 0.800 0.120" size="0.15 0.15 0.120" rgba="0.45 0.40 0.35 1" friction="1.0 0.1 0.01"/> -->
+
+    <!-- 4 组楼梯 (10/15/20/25cm) 沿 x 轴前后依次排开, 每组完整金字塔 (上13级+平台+下12级)。
+         单级高差: 10cm组=5cm, 15cm组=7.5cm, 20cm组=10cm, 25cm组=12.5cm; 进深每级30cm。
+         由 sim2sim/_gen_stairs.py 生成, 勿手改。-->
+    <!-- stairs10: x 2.150 -> 10.650  -->
+    <!-- <geom name="stairs10_step1" type="box" pos="2.150 0.0 0.050" size="0.15 10.0 0.050" rgba="0.42 0.42 0.42 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs10_step2" type="box" pos="2.450 0.0 0.100" size="0.15 10.0 0.100" rgba="0.42 0.42 0.42 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs10_step3" type="box" pos="2.750 0.0 0.150" size="0.15 10.0 0.150" rgba="0.42 0.42 0.42 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs10_step4" type="box" pos="3.050 0.0 0.200" size="0.15 10.0 0.200" rgba="0.42 0.42 0.42 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs10_step5" type="box" pos="3.350 0.0 0.250" size="0.15 10.0 0.250" rgba="0.42 0.42 0.42 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs10_step6" type="box" pos="3.650 0.0 0.300" size="0.15 10.0 0.300" rgba="0.42 0.42 0.42 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs10_step7" type="box" pos="3.950 0.0 0.350" size="0.15 10.0 0.350" rgba="0.42 0.42 0.42 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs10_step8" type="box" pos="4.250 0.0 0.400" size="0.15 10.0 0.400" rgba="0.42 0.42 0.42 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs10_step9" type="box" pos="4.550 0.0 0.450" size="0.15 10.0 0.450" rgba="0.42 0.42 0.42 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs10_step10" type="box" pos="4.850 0.0 0.500" size="0.15 10.0 0.500" rgba="0.42 0.42 0.42 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs10_step11" type="box" pos="5.150 0.0 0.550" size="0.15 10.0 0.550" rgba="0.42 0.42 0.42 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs10_step12" type="box" pos="5.450 0.0 0.600" size="0.15 10.0 0.600" rgba="0.42 0.42 0.42 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs10_step13" type="box" pos="5.750 0.0 0.650" size="0.15 10.0 0.650" rgba="0.42 0.42 0.42 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs10_platform" type="box" pos="6.400 0.0 0.650" size="0.5 10.0 0.650" rgba="0.42 0.42 0.42 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs10_step14" type="box" pos="7.050 0.0 0.600" size="0.15 10.0 0.600" rgba="0.42 0.42 0.42 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs10_step15" type="box" pos="7.350 0.0 0.550" size="0.15 10.0 0.550" rgba="0.42 0.42 0.42 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs10_step16" type="box" pos="7.650 0.0 0.500" size="0.15 10.0 0.500" rgba="0.42 0.42 0.42 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs10_step17" type="box" pos="7.950 0.0 0.450" size="0.15 10.0 0.450" rgba="0.42 0.42 0.42 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs10_step18" type="box" pos="8.250 0.0 0.400" size="0.15 10.0 0.400" rgba="0.42 0.42 0.42 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs10_step19" type="box" pos="8.550 0.0 0.350" size="0.15 10.0 0.350" rgba="0.42 0.42 0.42 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs10_step20" type="box" pos="8.850 0.0 0.300" size="0.15 10.0 0.300" rgba="0.42 0.42 0.42 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs10_step21" type="box" pos="9.150 0.0 0.250" size="0.15 10.0 0.250" rgba="0.42 0.42 0.42 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs10_step22" type="box" pos="9.450 0.0 0.200" size="0.15 10.0 0.200" rgba="0.42 0.42 0.42 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs10_step23" type="box" pos="9.750 0.0 0.150" size="0.15 10.0 0.150" rgba="0.42 0.42 0.42 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs10_step24" type="box" pos="10.050 0.0 0.100" size="0.15 10.0 0.100" rgba="0.42 0.42 0.42 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs10_step25" type="box" pos="10.350 0.0 0.050" size="0.15 10.0 0.050" rgba="0.42 0.42 0.42 1" friction="1.0 0.1 0.01"/> -->
+    <!-- stairs15: x 11.150 to 19.650 -->
+    <!-- <geom name="stairs15_step1" type="box" pos="11.150 0.0 0.075" size="0.15 10.0 0.075" rgba="0.36 0.42 0.48 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs15_step2" type="box" pos="11.450 0.0 0.150" size="0.15 10.0 0.150" rgba="0.36 0.42 0.48 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs15_step3" type="box" pos="11.750 0.0 0.225" size="0.15 10.0 0.225" rgba="0.36 0.42 0.48 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs15_step4" type="box" pos="12.050 0.0 0.300" size="0.15 10.0 0.300" rgba="0.36 0.42 0.48 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs15_step5" type="box" pos="12.350 0.0 0.375" size="0.15 10.0 0.375" rgba="0.36 0.42 0.48 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs15_step6" type="box" pos="12.650 0.0 0.450" size="0.15 10.0 0.450" rgba="0.36 0.42 0.48 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs15_step7" type="box" pos="12.950 0.0 0.525" size="0.15 10.0 0.525" rgba="0.36 0.42 0.48 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs15_step8" type="box" pos="13.250 0.0 0.600" size="0.15 10.0 0.600" rgba="0.36 0.42 0.48 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs15_step9" type="box" pos="13.550 0.0 0.675" size="0.15 10.0 0.675" rgba="0.36 0.42 0.48 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs15_step10" type="box" pos="13.850 0.0 0.750" size="0.15 10.0 0.750" rgba="0.36 0.42 0.48 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs15_step11" type="box" pos="14.150 0.0 0.825" size="0.15 10.0 0.825" rgba="0.36 0.42 0.48 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs15_step12" type="box" pos="14.450 0.0 0.900" size="0.15 10.0 0.900" rgba="0.36 0.42 0.48 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs15_step13" type="box" pos="14.750 0.0 0.975" size="0.15 10.0 0.975" rgba="0.36 0.42 0.48 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs15_platform" type="box" pos="15.400 0.0 0.975" size="0.5 10.0 0.975" rgba="0.36 0.42 0.48 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs15_step14" type="box" pos="16.050 0.0 0.900" size="0.15 10.0 0.900" rgba="0.36 0.42 0.48 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs15_step15" type="box" pos="16.350 0.0 0.825" size="0.15 10.0 0.825" rgba="0.36 0.42 0.48 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs15_step16" type="box" pos="16.650 0.0 0.750" size="0.15 10.0 0.750" rgba="0.36 0.42 0.48 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs15_step17" type="box" pos="16.950 0.0 0.675" size="0.15 10.0 0.675" rgba="0.36 0.42 0.48 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs15_step18" type="box" pos="17.250 0.0 0.600" size="0.15 10.0 0.600" rgba="0.36 0.42 0.48 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs15_step19" type="box" pos="17.550 0.0 0.525" size="0.15 10.0 0.525" rgba="0.36 0.42 0.48 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs15_step20" type="box" pos="17.850 0.0 0.450" size="0.15 10.0 0.450" rgba="0.36 0.42 0.48 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs15_step21" type="box" pos="18.150 0.0 0.375" size="0.15 10.0 0.375" rgba="0.36 0.42 0.48 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs15_step22" type="box" pos="18.450 0.0 0.300" size="0.15 10.0 0.300" rgba="0.36 0.42 0.48 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs15_step23" type="box" pos="18.750 0.0 0.225" size="0.15 10.0 0.225" rgba="0.36 0.42 0.48 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs15_step24" type="box" pos="19.050 0.0 0.150" size="0.15 10.0 0.150" rgba="0.36 0.42 0.48 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs15_step25" type="box" pos="19.350 0.0 0.075" size="0.15 10.0 0.075" rgba="0.36 0.42 0.48 1" friction="1.0 0.1 0.01"/> -->
+    <!-- stairs20: x 20.150 to 28.650 -->
+    <!-- <geom name="stairs20_step1" type="box" pos="20.150 0.0 0.100" size="0.15 10.0 0.100" rgba="0.42 0.46 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs20_step2" type="box" pos="20.450 0.0 0.200" size="0.15 10.0 0.200" rgba="0.42 0.46 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs20_step3" type="box" pos="20.750 0.0 0.300" size="0.15 10.0 0.300" rgba="0.42 0.46 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs20_step4" type="box" pos="21.050 0.0 0.400" size="0.15 10.0 0.400" rgba="0.42 0.46 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs20_step5" type="box" pos="21.350 0.0 0.500" size="0.15 10.0 0.500" rgba="0.42 0.46 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs20_step6" type="box" pos="21.650 0.0 0.600" size="0.15 10.0 0.600" rgba="0.42 0.46 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs20_step7" type="box" pos="21.950 0.0 0.700" size="0.15 10.0 0.700" rgba="0.42 0.46 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs20_step8" type="box" pos="22.250 0.0 0.800" size="0.15 10.0 0.800" rgba="0.42 0.46 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs20_step9" type="box" pos="22.550 0.0 0.900" size="0.15 10.0 0.900" rgba="0.42 0.46 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs20_step10" type="box" pos="22.850 0.0 1.000" size="0.15 10.0 1.000" rgba="0.42 0.46 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs20_step11" type="box" pos="23.150 0.0 1.100" size="0.15 10.0 1.100" rgba="0.42 0.46 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs20_step12" type="box" pos="23.450 0.0 1.200" size="0.15 10.0 1.200" rgba="0.42 0.46 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs20_step13" type="box" pos="23.750 0.0 1.300" size="0.15 10.0 1.300" rgba="0.42 0.46 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs20_platform" type="box" pos="24.400 0.0 1.300" size="0.5 10.0 1.300" rgba="0.42 0.46 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs20_step14" type="box" pos="25.050 0.0 1.200" size="0.15 10.0 1.200" rgba="0.42 0.46 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs20_step15" type="box" pos="25.350 0.0 1.100" size="0.15 10.0 1.100" rgba="0.42 0.46 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs20_step16" type="box" pos="25.650 0.0 1.000" size="0.15 10.0 1.000" rgba="0.42 0.46 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs20_step17" type="box" pos="25.950 0.0 0.900" size="0.15 10.0 0.900" rgba="0.42 0.46 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs20_step18" type="box" pos="26.250 0.0 0.800" size="0.15 10.0 0.800" rgba="0.42 0.46 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs20_step19" type="box" pos="26.550 0.0 0.700" size="0.15 10.0 0.700" rgba="0.42 0.46 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs20_step20" type="box" pos="26.850 0.0 0.600" size="0.15 10.0 0.600" rgba="0.42 0.46 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs20_step21" type="box" pos="27.150 0.0 0.500" size="0.15 10.0 0.500" rgba="0.42 0.46 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs20_step22" type="box" pos="27.450 0.0 0.400" size="0.15 10.0 0.400" rgba="0.42 0.46 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs20_step23" type="box" pos="27.750 0.0 0.300" size="0.15 10.0 0.300" rgba="0.42 0.46 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs20_step24" type="box" pos="28.050 0.0 0.200" size="0.15 10.0 0.200" rgba="0.42 0.46 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs20_step25" type="box" pos="28.350 0.0 0.100" size="0.15 10.0 0.100" rgba="0.42 0.46 0.36 1" friction="1.0 0.1 0.01"/> -->
+    <!-- stairs25: x 29.150 to 37.650 -->
+    <!-- <geom name="stairs25_step1" type="box" pos="29.150 0.0 0.125" size="0.15 10.0 0.125" rgba="0.48 0.38 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs25_step1" type="box" pos="29.150 0.0 0.125" size="0.15 10.0 0.125" rgba="0.48 0.38 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs25_step2" type="box" pos="29.450 0.0 0.250" size="0.15 10.0 0.250" rgba="0.48 0.38 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs25_step3" type="box" pos="29.750 0.0 0.375" size="0.15 10.0 0.375" rgba="0.48 0.38 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs25_step4" type="box" pos="30.050 0.0 0.500" size="0.15 10.0 0.500" rgba="0.48 0.38 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs25_step5" type="box" pos="30.350 0.0 0.625" size="0.15 10.0 0.625" rgba="0.48 0.38 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs25_step6" type="box" pos="30.650 0.0 0.750" size="0.15 10.0 0.750" rgba="0.48 0.38 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs25_step7" type="box" pos="30.950 0.0 0.875" size="0.15 10.0 0.875" rgba="0.48 0.38 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs25_step8" type="box" pos="31.250 0.0 1.000" size="0.15 10.0 1.000" rgba="0.48 0.38 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs25_step9" type="box" pos="31.550 0.0 1.125" size="0.15 10.0 1.125" rgba="0.48 0.38 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs25_step10" type="box" pos="31.850 0.0 1.250" size="0.15 10.0 1.250" rgba="0.48 0.38 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs25_step11" type="box" pos="32.150 0.0 1.375" size="0.15 10.0 1.375" rgba="0.48 0.38 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs25_step12" type="box" pos="32.450 0.0 1.500" size="0.15 10.0 1.500" rgba="0.48 0.38 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs25_step13" type="box" pos="32.750 0.0 1.625" size="0.15 10.0 1.625" rgba="0.48 0.38 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs25_platform" type="box" pos="33.400 0.0 1.625" size="0.5 10.0 1.625" rgba="0.48 0.38 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs25_step14" type="box" pos="34.050 0.0 1.500" size="0.15 10.0 1.500" rgba="0.48 0.38 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs25_step15" type="box" pos="34.350 0.0 1.375" size="0.15 10.0 1.375" rgba="0.48 0.38 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs25_step16" type="box" pos="34.650 0.0 1.250" size="0.15 10.0 1.250" rgba="0.48 0.38 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs25_step17" type="box" pos="34.950 0.0 1.125" size="0.15 10.0 1.125" rgba="0.48 0.38 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs25_step18" type="box" pos="35.250 0.0 1.000" size="0.15 10.0 1.000" rgba="0.48 0.38 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs25_step19" type="box" pos="35.550 0.0 0.875" size="0.15 10.0 0.875" rgba="0.48 0.38 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs25_step20" type="box" pos="35.850 0.0 0.750" size="0.15 10.0 0.750" rgba="0.48 0.38 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs25_step21" type="box" pos="36.150 0.0 0.625" size="0.15 10.0 0.625" rgba="0.48 0.38 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs25_step22" type="box" pos="36.450 0.0 0.500" size="0.15 10.0 0.500" rgba="0.48 0.38 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs25_step23" type="box" pos="36.750 0.0 0.375" size="0.15 10.0 0.375" rgba="0.48 0.38 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs25_step24" type="box" pos="37.050 0.0 0.250" size="0.15 10.0 0.250" rgba="0.48 0.38 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs25_step25" type="box" pos="37.350 0.0 0.125" size="0.15 10.0 0.125" rgba="0.48 0.38 0.36 1" friction="1.0 0.1 0.01"/> -->
+
+
+
+
+    <!-- <geom name="stairs10_step1" type="box" pos="2.150 0 0.050" size="0.15 10.0 0.050" rgba="0.42 0.42 0.42 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs10_step2" type="box" pos="2.450 0 0.100" size="0.15 10.0 0.100" rgba="0.42 0.42 0.42 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs10_step3" type="box" pos="2.750 0 0.150" size="0.15 10.0 0.150" rgba="0.42 0.42 0.42 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs10_step4" type="box" pos="3.050 0 0.200" size="0.15 10.0 0.200" rgba="0.42 0.42 0.42 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs10_step5" type="box" pos="3.350 0 0.250" size="0.15 10.0 0.250" rgba="0.42 0.42 0.42 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs10_step6" type="box" pos="3.650 0 0.300" size="0.15 10.0 0.300" rgba="0.42 0.42 0.42 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs10_step7" type="box" pos="3.950 0 0.350" size="0.15 10.0 0.350" rgba="0.42 0.42 0.42 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs10_step8" type="box" pos="4.250 0 0.400" size="0.15 10.0 0.400" rgba="0.42 0.42 0.42 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs10_step9" type="box" pos="4.550 0 0.450" size="0.15 10.0 0.450" rgba="0.42 0.42 0.42 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs10_step10" type="box" pos="4.850 0 0.500" size="0.15 10.0 0.500" rgba="0.42 0.42 0.42 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs10_step11" type="box" pos="5.150 0 0.550" size="0.15 10.0 0.550" rgba="0.42 0.42 0.42 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs10_step12" type="box" pos="5.450 0 0.600" size="0.15 10.0 0.600" rgba="0.42 0.42 0.42 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs10_step13" type="box" pos="5.750 0 0.650" size="0.15 10.0 0.650" rgba="0.42 0.42 0.42 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs10_platform" type="box" pos="6.400 0 0.650" size="0.5 10.0 0.650" rgba="0.42 0.42 0.42 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs10_step14" type="box" pos="7.050 0 0.600" size="0.15 10.0 0.600" rgba="0.42 0.42 0.42 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs10_step15" type="box" pos="7.350 0 0.550" size="0.15 10.0 0.550" rgba="0.42 0.42 0.42 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs10_step16" type="box" pos="7.650 0 0.500" size="0.15 10.0 0.500" rgba="0.42 0.42 0.42 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs10_step17" type="box" pos="7.950 0 0.450" size="0.15 10.0 0.450" rgba="0.42 0.42 0.42 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs10_step18" type="box" pos="8.250 0 0.400" size="0.15 10.0 0.400" rgba="0.42 0.42 0.42 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs10_step19" type="box" pos="8.550 0 0.350" size="0.15 10.0 0.350" rgba="0.42 0.42 0.42 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs10_step20" type="box" pos="8.850 0 0.300" size="0.15 10.0 0.300" rgba="0.42 0.42 0.42 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs10_step21" type="box" pos="9.150 0 0.250" size="0.15 10.0 0.250" rgba="0.42 0.42 0.42 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs10_step22" type="box" pos="9.450 0 0.200" size="0.15 10.0 0.200" rgba="0.42 0.42 0.42 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs10_step23" type="box" pos="9.750 0 0.150" size="0.15 10.0 0.150" rgba="0.42 0.42 0.42 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs10_step24" type="box" pos="10.050 0 0.100" size="0.15 10.0 0.100" rgba="0.42 0.42 0.42 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs10_step25" type="box" pos="10.350 0 0.050" size="0.15 10.0 0.050" rgba="0.42 0.42 0.42 1" friction="1.0 0.1 0.01"/> -->
+
+    <!-- 15cm 楼梯，进深 30cm -->
+    <!-- <geom name="stairs15_step1" type="box" pos="2.150 0 0.075" size="0.15 10.0 0.075" rgba="0.36 0.42 0.48 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs15_step2" type="box" pos="2.450 0 0.150" size="0.15 10.0 0.150" rgba="0.36 0.42 0.48 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs15_step3" type="box" pos="2.750 0 0.225" size="0.15 10.0 0.225" rgba="0.36 0.42 0.48 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs15_step4" type="box" pos="3.050 0 0.300" size="0.15 10.0 0.300" rgba="0.36 0.42 0.48 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs15_step5" type="box" pos="3.350 0 0.375" size="0.15 10.0 0.375" rgba="0.36 0.42 0.48 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs15_step6" type="box" pos="3.650 0 0.450" size="0.15 10.0 0.450" rgba="0.36 0.42 0.48 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs15_step7" type="box" pos="3.950 0 0.525" size="0.15 10.0 0.525" rgba="0.36 0.42 0.48 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs15_step8" type="box" pos="4.250 0 0.600" size="0.15 10.0 0.600" rgba="0.36 0.42 0.48 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs15_step9" type="box" pos="4.550 0 0.675" size="0.15 10.0 0.675" rgba="0.36 0.42 0.48 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs15_step10" type="box" pos="4.850 0 0.750" size="0.15 10.0 0.750" rgba="0.36 0.42 0.48 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs15_step11" type="box" pos="5.150 0 0.825" size="0.15 10.0 0.825" rgba="0.36 0.42 0.48 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs15_step12" type="box" pos="5.450 0 0.900" size="0.15 10.0 0.900" rgba="0.36 0.42 0.48 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs15_step13" type="box" pos="5.750 0 0.975" size="0.15 10.0 0.975" rgba="0.36 0.42 0.48 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs15_platform" type="box" pos="6.400 0 0.975" size="0.5 10.0 0.975" rgba="0.36 0.42 0.48 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs15_step14" type="box" pos="7.050 0 0.900" size="0.15 10.0 0.900" rgba="0.36 0.42 0.48 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs15_step15" type="box" pos="7.350 0 0.825" size="0.15 10.0 0.825" rgba="0.36 0.42 0.48 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs15_step16" type="box" pos="7.650 0 0.750" size="0.15 10.0 0.750" rgba="0.36 0.42 0.48 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs15_step17" type="box" pos="7.950 0 0.675" size="0.15 10.0 0.675" rgba="0.36 0.42 0.48 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs15_step18" type="box" pos="8.250 0 0.600" size="0.15 10.0 0.600" rgba="0.36 0.42 0.48 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs15_step19" type="box" pos="8.550 0 0.525" size="0.15 10.0 0.525" rgba="0.36 0.42 0.48 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs15_step20" type="box" pos="8.850 0 0.450" size="0.15 10.0 0.450" rgba="0.36 0.42 0.48 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs15_step21" type="box" pos="9.150 0 0.375" size="0.15 10.0 0.375" rgba="0.36 0.42 0.48 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs15_step22" type="box" pos="9.450 0 0.300" size="0.15 10.0 0.300" rgba="0.36 0.42 0.48 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs15_step23" type="box" pos="9.750 0 0.225" size="0.15 10.0 0.225" rgba="0.36 0.42 0.48 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs15_step24" type="box" pos="10.050 0 0.150" size="0.15 10.0 0.150" rgba="0.36 0.42 0.48 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs15_step25" type="box" pos="10.350 0 0.075" size="0.15 10.0 0.075" rgba="0.36 0.42 0.48 1" friction="1.0 0.1 0.01"/> -->
+
+    <!-- 20cm 楼梯，进深 30cm -->
+    <!-- <geom name="stairs20_step1" type="box" pos="2.150 0 0.100" size="0.15 10.0 0.100" rgba="0.42 0.46 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs20_step2" type="box" pos="2.450 0 0.200" size="0.15 10.0 0.200" rgba="0.42 0.46 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs20_step3" type="box" pos="2.750 0 0.300" size="0.15 10.0 0.300" rgba="0.42 0.46 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs20_step4" type="box" pos="3.050 0 0.400" size="0.15 10.0 0.400" rgba="0.42 0.46 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs20_step5" type="box" pos="3.350 0 0.500" size="0.15 10.0 0.500" rgba="0.42 0.46 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs20_step6" type="box" pos="3.650 0 0.600" size="0.15 10.0 0.600" rgba="0.42 0.46 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs20_step7" type="box" pos="3.950 0 0.700" size="0.15 10.0 0.700" rgba="0.42 0.46 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs20_step8" type="box" pos="4.250 0 0.800" size="0.15 10.0 0.800" rgba="0.42 0.46 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs20_step9" type="box" pos="4.550 0 0.900" size="0.15 10.0 0.900" rgba="0.42 0.46 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs20_step10" type="box" pos="4.850 0 1.000" size="0.15 10.0 1.000" rgba="0.42 0.46 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs20_step11" type="box" pos="5.150 0 1.100" size="0.15 10.0 1.100" rgba="0.42 0.46 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs20_step12" type="box" pos="5.450 0 1.200" size="0.15 10.0 1.200" rgba="0.42 0.46 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs20_step13" type="box" pos="5.750 0 1.300" size="0.15 10.0 1.300" rgba="0.42 0.46 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs20_platform" type="box" pos="6.400 0 1.300" size="0.5 10.0 1.300" rgba="0.42 0.46 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs20_step14" type="box" pos="7.050 0 1.200" size="0.15 10.0 1.200" rgba="0.42 0.46 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs20_step15" type="box" pos="7.350 0 1.100" size="0.15 10.0 1.100" rgba="0.42 0.46 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs20_step16" type="box" pos="7.650 0 1.000" size="0.15 10.0 1.000" rgba="0.42 0.46 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs20_step17" type="box" pos="7.950 0 0.900" size="0.15 10.0 0.900" rgba="0.42 0.46 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs20_step18" type="box" pos="8.250 0 0.800" size="0.15 10.0 0.800" rgba="0.42 0.46 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs20_step19" type="box" pos="8.550 0 0.700" size="0.15 10.0 0.700" rgba="0.42 0.46 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs20_step20" type="box" pos="8.850 0 0.600" size="0.15 10.0 0.600" rgba="0.42 0.46 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs20_step21" type="box" pos="9.150 0 0.500" size="0.15 10.0 0.500" rgba="0.42 0.46 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs20_step22" type="box" pos="9.450 0 0.400" size="0.15 10.0 0.400" rgba="0.42 0.46 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs20_step23" type="box" pos="9.750 0 0.300" size="0.15 10.0 0.300" rgba="0.42 0.46 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs20_step24" type="box" pos="10.050 0 0.200" size="0.15 10.0 0.200" rgba="0.42 0.46 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs20_step25" type="box" pos="10.350 0 0.100" size="0.15 10.0 0.100" rgba="0.42 0.46 0.36 1" friction="1.0 0.1 0.01"/> -->
+
+    <!-- 25cm 楼梯，进深 30cm -->
+    <!-- <geom name="stairs25_step1" type="box" pos="2.150 3 0.125" size="0.15 10.0 0.125" rgba="0.48 0.38 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs25_step2" type="box" pos="2.450 3 0.250" size="0.15 10.0 0.250" rgba="0.48 0.38 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs25_step3" type="box" pos="2.750 3 0.375" size="0.15 10.0 0.375" rgba="0.48 0.38 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs25_step4" type="box" pos="3.050 3 0.500" size="0.15 10.0 0.500" rgba="0.48 0.38 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs25_step5" type="box" pos="3.350 3 0.625" size="0.15 10.0 0.625" rgba="0.48 0.38 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs25_step6" type="box" pos="3.650 3 0.750" size="0.15 10.0 0.750" rgba="0.48 0.38 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs25_step7" type="box" pos="3.950 3 0.875" size="0.15 10.0 0.875" rgba="0.48 0.38 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs25_step8" type="box" pos="4.250 3 1.000" size="0.15 10.0 1.000" rgba="0.48 0.38 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs25_step9" type="box" pos="4.550 3 1.125" size="0.15 10.0 1.125" rgba="0.48 0.38 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs25_step10" type="box" pos="4.850 3 1.250" size="0.15 10.0 1.250" rgba="0.48 0.38 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs25_step11" type="box" pos="5.150 3 1.375" size="0.15 10.0 1.375" rgba="0.48 0.38 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs25_step12" type="box" pos="5.450 3 1.500" size="0.15 10.0 1.500" rgba="0.48 0.38 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs25_step13" type="box" pos="5.750 3 1.625" size="0.15 10.0 1.625" rgba="0.48 0.38 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs25_platform" type="box" pos="6.400 3 1.625" size="0.5 10.0 1.625" rgba="0.48 0.38 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs25_step14" type="box" pos="7.050 3 1.500" size="0.15 10.0 1.500" rgba="0.48 0.38 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs25_step15" type="box" pos="7.350 3 1.375" size="0.15 10.0 1.375" rgba="0.48 0.38 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs25_step16" type="box" pos="7.650 3 1.250" size="0.15 10.0 1.250" rgba="0.48 0.38 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs25_step17" type="box" pos="7.950 3 1.125" size="0.15 10.0 1.125" rgba="0.48 0.38 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs25_step18" type="box" pos="8.250 3 1.000" size="0.15 10.0 1.000" rgba="0.48 0.38 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs25_step19" type="box" pos="8.550 3 0.875" size="0.15 10.0 0.875" rgba="0.48 0.38 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs25_step20" type="box" pos="8.850 3 0.750" size="0.15 10.0 0.750" rgba="0.48 0.38 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs25_step21" type="box" pos="9.150 3 0.625" size="0.15 10.0 0.625" rgba="0.48 0.38 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs25_step22" type="box" pos="9.450 3 0.500" size="0.15 10.0 0.500" rgba="0.48 0.38 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs25_step23" type="box" pos="9.750 3 0.375" size="0.15 10.0 0.375" rgba="0.48 0.38 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs25_step24" type="box" pos="10.050 3 0.250" size="0.15 10.0 0.250" rgba="0.48 0.38 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs25_step25" type="box" pos="10.350 3 0.125" size="0.15 10.0 0.125" rgba="0.48 0.38 0.36 1" friction="1.0 0.1 0.01"/> -->
+
+    <!-- 越障 -->
+    <!-- <geom name="stairs10_step1" type="box" pos="2.150 0 0.050" size="0.15 10.0 0.050" rgba="0.42 0.42 0.42 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs15_step1" type="box" pos="4.150 0 0.075" size="0.15 10.0 0.075" rgba="0.36 0.42 0.48 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs20_step1" type="box" pos="6.150 0 0.100" size="0.15 10.0 0.100" rgba="0.42 0.46 0.36 1" friction="1.0 0.1 0.01"/>
+    <geom name="stairs25_step1" type="box" pos="8.150 3 0.125" size="0.15 10.0 0.115" rgba="0.48 0.38 0.36 1" friction="1.0 0.1 0.01"/> -->
+
+
+    <!-- 连续减速带：现实道路常见橡胶黄黑相间，单条7.5cm高、约77cm长；5条沿x方向连续排列。 -->
+    <!-- <geom name="speed_bump_01_01" type="box" pos="2.150 0 0.007" size="0.035 3.8 0.007" rgba="0.05 0.05 0.05 1" friction="1.0 0.1 0.01"/>
+    <geom name="speed_bump_01_02" type="box" pos="2.220 0 0.014" size="0.035 3.8 0.014" rgba="0.95 0.72 0.05 1" friction="1.0 0.1 0.01"/>
+    <geom name="speed_bump_01_03" type="box" pos="2.290 0 0.022" size="0.035 3.8 0.022" rgba="0.05 0.05 0.05 1" friction="1.0 0.1 0.01"/>
+    <geom name="speed_bump_01_04" type="box" pos="2.360 0 0.029" size="0.035 3.8 0.029" rgba="0.95 0.72 0.05 1" friction="1.0 0.1 0.01"/>
+    <geom name="speed_bump_01_05" type="box" pos="2.430 0 0.0335" size="0.035 3.8 0.0335" rgba="0.05 0.05 0.05 1" friction="1.0 0.1 0.01"/>
+    <geom name="speed_bump_01_06" type="box" pos="2.500 0 0.0375" size="0.035 3.8 0.0375" rgba="0.95 0.72 0.05 1" friction="1.0 0.1 0.01"/>
+    <geom name="speed_bump_01_07" type="box" pos="2.570 0 0.0335" size="0.035 3.8 0.0335" rgba="0.05 0.05 0.05 1" friction="1.0 0.1 0.01"/>
+    <geom name="speed_bump_01_08" type="box" pos="2.640 0 0.029" size="0.035 3.8 0.029" rgba="0.95 0.72 0.05 1" friction="1.0 0.1 0.01"/>
+    <geom name="speed_bump_01_09" type="box" pos="2.710 0 0.022" size="0.035 3.8 0.022" rgba="0.05 0.05 0.05 1" friction="1.0 0.1 0.01"/>
+    <geom name="speed_bump_01_10" type="box" pos="2.780 0 0.014" size="0.035 3.8 0.014" rgba="0.95 0.72 0.05 1" friction="1.0 0.1 0.01"/>
+    <geom name="speed_bump_01_11" type="box" pos="2.850 0 0.007" size="0.035 3.8 0.007" rgba="0.05 0.05 0.05 1" friction="1.0 0.1 0.01"/>
+
+    <geom name="speed_bump_02_01" type="box" pos="3.000 0 0.007" size="0.035 3.8 0.007" rgba="0.05 0.05 0.05 1" friction="1.0 0.1 0.01"/>
+    <geom name="speed_bump_02_02" type="box" pos="3.070 0 0.014" size="0.035 3.8 0.014" rgba="0.95 0.72 0.05 1" friction="1.0 0.1 0.01"/>
+    <geom name="speed_bump_02_03" type="box" pos="3.140 0 0.022" size="0.035 3.8 0.022" rgba="0.05 0.05 0.05 1" friction="1.0 0.1 0.01"/>
+    <geom name="speed_bump_02_04" type="box" pos="3.210 0 0.029" size="0.035 3.8 0.029" rgba="0.95 0.72 0.05 1" friction="1.0 0.1 0.01"/>
+    <geom name="speed_bump_02_05" type="box" pos="3.280 0 0.0335" size="0.035 3.8 0.0335" rgba="0.05 0.05 0.05 1" friction="1.0 0.1 0.01"/>
+    <geom name="speed_bump_02_06" type="box" pos="3.350 0 0.0375" size="0.035 3.8 0.0375" rgba="0.95 0.72 0.05 1" friction="1.0 0.1 0.01"/>
+    <geom name="speed_bump_02_07" type="box" pos="3.420 0 0.0335" size="0.035 3.8 0.0335" rgba="0.05 0.05 0.05 1" friction="1.0 0.1 0.01"/>
+    <geom name="speed_bump_02_08" type="box" pos="3.490 0 0.029" size="0.035 3.8 0.029" rgba="0.95 0.72 0.05 1" friction="1.0 0.1 0.01"/>
+    <geom name="speed_bump_02_09" type="box" pos="3.560 0 0.022" size="0.035 3.8 0.022" rgba="0.05 0.05 0.05 1" friction="1.0 0.1 0.01"/>
+    <geom name="speed_bump_02_10" type="box" pos="3.630 0 0.014" size="0.035 3.8 0.014" rgba="0.95 0.72 0.05 1" friction="1.0 0.1 0.01"/>
+    <geom name="speed_bump_02_11" type="box" pos="3.700 0 0.007" size="0.035 3.8 0.007" rgba="0.05 0.05 0.05 1" friction="1.0 0.1 0.01"/>
+
+    <geom name="speed_bump_03_01" type="box" pos="3.850 0 0.007" size="0.035 3.8 0.007" rgba="0.05 0.05 0.05 1" friction="1.0 0.1 0.01"/>
+    <geom name="speed_bump_03_02" type="box" pos="3.920 0 0.014" size="0.035 3.8 0.014" rgba="0.95 0.72 0.05 1" friction="1.0 0.1 0.01"/>
+    <geom name="speed_bump_03_03" type="box" pos="3.990 0 0.022" size="0.035 3.8 0.022" rgba="0.05 0.05 0.05 1" friction="1.0 0.1 0.01"/>
+    <geom name="speed_bump_03_04" type="box" pos="4.060 0 0.029" size="0.035 3.8 0.029" rgba="0.95 0.72 0.05 1" friction="1.0 0.1 0.01"/>
+    <geom name="speed_bump_03_05" type="box" pos="4.130 0 0.0335" size="0.035 3.8 0.0335" rgba="0.05 0.05 0.05 1" friction="1.0 0.1 0.01"/>
+    <geom name="speed_bump_03_06" type="box" pos="4.200 0 0.0375" size="0.035 3.8 0.0375" rgba="0.95 0.72 0.05 1" friction="1.0 0.1 0.01"/>
+    <geom name="speed_bump_03_07" type="box" pos="4.270 0 0.0335" size="0.035 3.8 0.0335" rgba="0.05 0.05 0.05 1" friction="1.0 0.1 0.01"/>
+    <geom name="speed_bump_03_08" type="box" pos="4.340 0 0.029" size="0.035 3.8 0.029" rgba="0.95 0.72 0.05 1" friction="1.0 0.1 0.01"/>
+    <geom name="speed_bump_03_09" type="box" pos="4.410 0 0.022" size="0.035 3.8 0.022" rgba="0.05 0.05 0.05 1" friction="1.0 0.1 0.01"/>
+    <geom name="speed_bump_03_10" type="box" pos="4.480 0 0.014" size="0.035 3.8 0.014" rgba="0.95 0.72 0.05 1" friction="1.0 0.1 0.01"/>
+    <geom name="speed_bump_03_11" type="box" pos="4.550 0 0.007" size="0.035 3.8 0.007" rgba="0.05 0.05 0.05 1" friction="1.0 0.1 0.01"/>
+
+    <geom name="speed_bump_04_01" type="box" pos="4.700 0 0.007" size="0.035 3.8 0.007" rgba="0.05 0.05 0.05 1" friction="1.0 0.1 0.01"/>
+    <geom name="speed_bump_04_02" type="box" pos="4.770 0 0.014" size="0.035 3.8 0.014" rgba="0.95 0.72 0.05 1" friction="1.0 0.1 0.01"/>
+    <geom name="speed_bump_04_03" type="box" pos="4.840 0 0.022" size="0.035 3.8 0.022" rgba="0.05 0.05 0.05 1" friction="1.0 0.1 0.01"/>
+    <geom name="speed_bump_04_04" type="box" pos="4.910 0 0.029" size="0.035 3.8 0.029" rgba="0.95 0.72 0.05 1" friction="1.0 0.1 0.01"/>
+    <geom name="speed_bump_04_05" type="box" pos="4.980 0 0.0335" size="0.035 3.8 0.0335" rgba="0.05 0.05 0.05 1" friction="1.0 0.1 0.01"/>
+    <geom name="speed_bump_04_06" type="box" pos="5.050 0 0.0375" size="0.035 3.8 0.0375" rgba="0.95 0.72 0.05 1" friction="1.0 0.1 0.01"/>
+    <geom name="speed_bump_04_07" type="box" pos="5.120 0 0.0335" size="0.035 3.8 0.0335" rgba="0.05 0.05 0.05 1" friction="1.0 0.1 0.01"/>
+    <geom name="speed_bump_04_08" type="box" pos="5.190 0 0.029" size="0.035 3.8 0.029" rgba="0.95 0.72 0.05 1" friction="1.0 0.1 0.01"/>
+    <geom name="speed_bump_04_09" type="box" pos="5.260 0 0.022" size="0.035 3.8 0.022" rgba="0.05 0.05 0.05 1" friction="1.0 0.1 0.01"/>
+    <geom name="speed_bump_04_10" type="box" pos="5.330 0 0.014" size="0.035 3.8 0.014" rgba="0.95 0.72 0.05 1" friction="1.0 0.1 0.01"/>
+    <geom name="speed_bump_04_11" type="box" pos="5.400 0 0.007" size="0.035 3.8 0.007" rgba="0.05 0.05 0.05 1" friction="1.0 0.1 0.01"/>
+
+    <geom name="speed_bump_05_01" type="box" pos="5.550 0 0.007" size="0.035 3.8 0.007" rgba="0.05 0.05 0.05 1" friction="1.0 0.1 0.01"/>
+    <geom name="speed_bump_05_02" type="box" pos="5.620 0 0.014" size="0.035 3.8 0.014" rgba="0.95 0.72 0.05 1" friction="1.0 0.1 0.01"/>
+    <geom name="speed_bump_05_03" type="box" pos="5.690 0 0.022" size="0.035 3.8 0.022" rgba="0.05 0.05 0.05 1" friction="1.0 0.1 0.01"/>
+    <geom name="speed_bump_05_04" type="box" pos="5.760 0 0.029" size="0.035 3.8 0.029" rgba="0.95 0.72 0.05 1" friction="1.0 0.1 0.01"/>
+    <geom name="speed_bump_05_05" type="box" pos="5.830 0 0.0335" size="0.035 3.8 0.0335" rgba="0.05 0.05 0.05 1" friction="1.0 0.1 0.01"/>
+    <geom name="speed_bump_05_06" type="box" pos="5.900 0 0.0375" size="0.035 3.8 0.0375" rgba="0.95 0.72 0.05 1" friction="1.0 0.1 0.01"/>
+    <geom name="speed_bump_05_07" type="box" pos="5.970 0 0.0335" size="0.035 3.8 0.0335" rgba="0.05 0.05 0.05 1" friction="1.0 0.1 0.01"/>
+    <geom name="speed_bump_05_08" type="box" pos="6.040 0 0.029" size="0.035 3.8 0.029" rgba="0.95 0.72 0.05 1" friction="1.0 0.1 0.01"/>
+    <geom name="speed_bump_05_09" type="box" pos="6.110 0 0.022" size="0.035 3.8 0.022" rgba="0.05 0.05 0.05 1" friction="1.0 0.1 0.01"/>
+    <geom name="speed_bump_05_10" type="box" pos="6.180 0 0.014" size="0.035 3.8 0.014" rgba="0.95 0.72 0.05 1" friction="1.0 0.1 0.01"/>
+    <geom name="speed_bump_05_11" type="box" pos="6.250 0 0.007" size="0.035 3.8 0.007" rgba="0.05 0.05 0.05 1" friction="1.0 0.1 0.01"/> -->
+
+    <!-- 斜坡 -->
+    <!-- 20° ramp: theta=0.349066 rad, pos=(3.819, 6, 1.026). -->
+    <!-- <geom name="ramp20" type="box" pos="3.819 0 0.426" euler="0 -0.149066 0" size="3 3.8 0.025" rgba="0.50 0.50 0.50 1" friction="1.0 0.1 0.01"/> -->
+    <!-- 30° ramp: theta=0.523599 rad, pos=(3.598, 9, 1.500). -->
+    <!-- <geom name="ramp30" type="box" pos="3.598 0 1.500" euler="0 -0.523599 0" size="3 0.8 0.025" rgba="0.55 0.45 0.42 1" friction="1.0 0.1 0.01"/> -->
+    <!-- 40° ramp: theta=0.698132 rad, pos=(3.298, 12, 1.928). -->
+    <!-- <geom name="ramp40" type="box" pos="3.298 12 1.928" euler="0 -0.698132 0" size="3 0.8 0.025" rgba="0.60 0.40 0.40 1" friction="1.0 0.1 0.01"/> -->
+
+  </worldbody>
+</mujoco>

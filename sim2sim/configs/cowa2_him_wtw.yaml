@@ -1,0 +1,163 @@
+# HIM (History-based Imitation and Modeling) model config for cowa2
+# The model takes obs_history (frame_stack * num_single_obs = 1770 dims) and outputs actions (12 dims)
+
+
+# =======  wtw 模型存档 d1-1  ======== #
+# 平地地形  
+# policy_path: "/home/ev/lyw_workspace/wheel_legged_gym/logs/quadruped_wtw_him_arm_fix/exported/0627/polices/0627_model_15400.onnx"   # quadruped_wtw_him_arm_fix/Jun26_18-14-26_smooth-plane-Vmax-base
+# policy_path: "/home/ev/lyw_workspace/wheel_legged_gym/logs/quadruped_wtw_him_arm_fix/exported/0721/polices/0721_model_33400.onnx"   # Jul21_18-02-55_dog2-辨识参数2
+
+# 平地地形-快速模式-步频2～4可调  
+# policy_path: "/home/ev/lyw_workspace/wheel_legged_gym/logs/quadruped_wtw_him_arm_fix/exported/0627/polices/0627_model_17400.onnx"   # quadruped_wtw_him_arm_fix/Jun26_18-11-26_smooth-plane-Vmax-base 
+# policy_path: "/home/ev/lyw_workspace/wheel_legged_gym/logs/quadruped_wtw_him_arm_fix/exported/0629/polices/0629_model_80000.onnx"   # quadruped_wtw_him_arm_fix/Jun27_11-24-22_快速平地 
+
+# 带适当斜坡地形  
+# policy_path: "/home/ev/lyw_workspace/wheel_legged_gym/logs/quadruped_wtw_him_arm_fix/exported/0629/polices/0629_model_47000.onnx"   # quadruped_wtw_him_arm_fix/Jun27_11-38-13_trimesh （平地保持目标 pitch）
+# policy_path: "/home/ev/lyw_workspace/wheel_legged_gym/logs/quadruped_wtw_him_arm_fix/exported/0630/polices/0630_model_100000.onnx"  # uadruped_wtw_him_arm_fix/Jun27_18-29-23_trimesh-pitch (全地形保持目标 pitch) 
+
+
+# =======  wtw 模型存档 d1-2  ======== #
+# 平地地形 
+# policy_path: "/home/ev/lyw_workspace/wheel_legged_gym/logs/quadruped_wtw_him_arm_fix/exported/0807/polices/0807_model_1000.pt"      # Aug07_17-20-46_d1-2-130-4.5-关闭姿态调整-减小整体转矩输出
+# policy_path: "/home/ev/lyw_workspace/wheel_legged_gym/logs/quadruped_wtw_him_arm_fix/exported/0813/polices/0813_model_5000.pt"      # Aug13_09-36-53_d1-2-clip降低转矩输出-exp-三角形轨迹-torque惩罚
+# policy_path: "/home/ev/lyw_workspace/wheel_legged_gym/logs/quadruped_wtw_him_arm_fix/exported/0819/polices/0819_model_10000.pt"     # Aug18_18-22-15_d1-2-trimesh-加大抬腿&base_height梯度
+# policy_path: "/home/ev/lyw_workspace/wheel_legged_gym/logs/quadruped_wtw_him_arm_fix/exported/0820/polices/0820_model_40500.pt"       # Aug19_10-42-25_d1-2-trimesh-纠正内8
+
+
+
+
+
+
+# =======  wtw 模型测试 d1-1 ======== #
+# policy_path: "/home/ev/lyw_workspace/wheel_legged_gym/logs/quadruped_wtw_him_arm_fix/exported/0804/polices/0804_model_27000.pt"  #Aug03_18-24-52_d1-1-130-4.5
+
+# =======  wtw 模型测试 d1-2 ======== #
+# policy_path: "/home/ev/lyw_workspace/wheel_legged_gym/logs/quadruped_wtw_him_arm_fix/exported/0820/polices/0820_model_22000.pt" 
+policy_path: "/home/ev/lyw_workspace/wheel_legged_gym/logs/quadruped_wtw_him_arm_fix/exported/0820/polices/0820_model_40500.pt" 
+
+
+
+
+
+
+
+
+
+
+
+
+frame_stack: 30
+xml_path: "{LEGGED_GYM_ROOT_DIR}/sim2sim/cowa2_description_mujoco/xml/scene.xml"
+simulation_duration: 60000000.0
+simulation_dt: 0.005
+control_decimation: 4
+
+# kps: [130.0, 130.0, 130.0, 130.0, 130.0, 130.0, 130.0, 130.0, 130.0, 130.0, 130.0, 130.0]
+# kds: [4.5, 4.5, 4.5, 4.5, 4.5, 4.5, 4.5, 4.5, 4.5, 4.5, 4.5, 4.5]
+
+kps: [160.0, 160.0, 160.0, 160.0, 160.0, 160.0, 160.0, 160.0, 160.0, 160.0, 160.0, 160.0]
+kds: [5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0]
+
+# kps: [150.0, 150.0, 150.0, 150.0, 150.0, 150.0, 150.0, 150.0, 150.0, 150.0, 150.0, 150.0]
+# kps: [140.0, 140.0, 140.0, 140.0, 140.0, 140.0, 140.0, 140.0, 140.0, 140.0, 140.0, 140.0]
+# kps: [130.0, 130.0, 130.0, 130.0, 130.0, 130.0, 130.0, 130.0, 130.0, 130.0, 130.0, 130.0]
+# kps: [120.0, 120.0, 120.0, 120.0, 120.0, 120.0, 120.0, 120.0, 120.0, 120.0, 120.0, 120.0]
+# kps: [100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0, 100.0]
+# kds: [4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0, 4.0]
+# kds: [4.5, 4.5, 4.5, 4.5, 4.5, 4.5, 4.5, 4.5, 4.5, 4.5, 4.5, 4.5]
+# kds: [5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0, 5.0]
+
+default_angles: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+lin_vel_scale: 2.0
+ang_vel_scale: 0.25
+dof_pos_scale: 1.0
+dof_vel_scale: 0.05
+action_scale: 0.25
+cmd_scale: [2.0, 2.0, 0.25, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0]
+num_actions: 12
+num_obs: 59
+cmd_range:
+  - [-3.0, 3.0]   
+  - [-1.5, 1.5]   
+  - [-1.5, 1.5]    
+max_cmd: [2.0, 1.5, 2.5]
+
+# gait_frequency: 1.6
+# gait_frequency: 1.8
+gait_frequency: 2.0
+gait_phase: 0.5
+gait_offset: 0.0
+gait_bound: 0.0
+gait_duration: 0.5
+footswing_height: 0.08
+body_height_cmd: 0.39
+body_pitch: 0.0
+body_roll: 0.0
+
+gait_frequency_range: [2.0, 2.0]
+gait_duration_range: [0.20, 0.55]
+footswing_height_range: [0.03, 0.35]
+body_pitch_range: [-0.5, 0.3]
+body_height_range: [0.25, 0.45]
+
+cmd_init: [1.0, 0.0, 0.0]
+
+mujoco_joint_names: [
+
+  "FL_hip_joint",
+  "FL_thigh_joint",
+  "FL_calf_joint",
+
+  "FR_hip_joint",
+  "FR_thigh_joint",
+  "FR_calf_joint",
+
+  "RL_hip_joint",
+  "RL_thigh_joint",
+  "RL_calf_joint",
+
+  "RR_hip_joint",
+  "RR_thigh_joint",
+  "RR_calf_joint"
+]
+
+model_joint_names: [
+
+  "FL_hip_joint",
+  "RL_hip_joint",
+  "FR_hip_joint",
+  "RR_hip_joint",
+
+  "FL_thigh_joint",
+  "RL_thigh_joint",
+  "FR_thigh_joint",
+  "RR_thigh_joint",
+
+  "FL_calf_joint",
+  "RL_calf_joint",
+  "FR_calf_joint",
+  "RR_calf_joint"
+
+]
+
+# ======= torque-velocity 约束 (对齐训练侧 quadruped_wtw_him_arm_fix_config.py) =======
+# 与 LeggedRobot._compute_torques 的平行四边形包络逐行一致, sim2real 必须对齐否则落脚重。
+# 参数取 wtw 训练侧 (hip 220Nm / calf 330Nm), 不是 amp 的 200/330。
+torque_vel_limits:
+  hip_thigh:
+    indices: [0, 1, 3, 4, 6, 7, 9, 10]   # FL/FR/RL/RR 的 hip+thigh
+    max_vel: 20.0      # rad/s, 超过此值力矩限 0
+    vel_1: 7.28        # rad/s, 此值以下力矩限 max_torque, 以上线性递减
+    max_torque: 200.0  # Nm
+    directional_brake: true
+  calf:
+    indices: [2, 5, 8, 11]              # FL/FR/RL/RR 的 calf
+    max_vel: 12.0
+    vel_1: 6.6
+    max_torque: 330.0
+    directional_brake: true
+  # 顶层静态 clip (兜底, 与分组 max_torque 对齐)
+  top_clip: [200.0, 200.0, 330.0,
+             200.0, 200.0, 330.0,
+             200.0, 200.0, 330.0,
+             200.0, 200.0, 330.0]
